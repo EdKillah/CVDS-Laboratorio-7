@@ -25,6 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.ResultSetMetaData;
+
 
 /**
  *
@@ -46,23 +48,23 @@ public class JDBCExample {
             
             System.out.println("Valor total pedido 1:"+valorTotalPedido(con, 1));
             
-            List<String> prodsPedido=nombresProductosPedido(con, 2);
+            List<String> prodsPedido=nombresProductosPedido(con, 1);
             
             
             System.out.println("Productos del pedido 1:");
             System.out.println("-----------------------");
             for (String nomprod:prodsPedido){
-                System.out.println(nomprod);
+                System.out.println("aaa; "+nomprod);
             }
             System.out.println("-----------------------");
             
-            
+
             int suCodigoECI=2137478;
-            registrarNuevoProducto(con, suCodigoECI, "EduardJ", 99999999);
+            registrarNuevoProducto(con, 21379, "EduardJ", 9971);
             con.commit();
-
-
             con.close();
+
+
                                    
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(JDBCExample.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,6 +86,14 @@ public class JDBCExample {
         //Asignar parámetros
         //usar 'execute'
 
+        PreparedStatement insertProductos=null;
+        String insertar = "INSERT INTO ORD_PRODUCTOS VALUES(?,?,?)";
+        insertProductos = con.prepareStatement(insertar);
+
+        insertProductos.setInt(1,codigo);
+        insertProductos.setString(2,nombre);
+        insertProductos.setInt(3,precio);
+        insertProductos.execute();
 
         con.commit();
         
@@ -106,30 +116,16 @@ public class JDBCExample {
 
         PreparedStatement updateNames = null;
 
-        String updateString = "SELECT nombre " +
-                                "FROM ORD_PRODUCTOS "+
-                                "JOIN ORD_DETALLES_PEDIDO "+
-                                "ON PRODUCTOS.id=ORD_DETALLES_PEDIDO " +
-                                "WHERE codigo= ?";
-
-        try {
-            con.setAutoCommit(false);
-
-            updateNames = con.prepareStatement(updateString);
-            updateNames.setInt(1,codigoPedido);
-            //updateTotal = con.prepareStatement(updateStatement);
-            ResultSet rs = updateNames.executeQuery(updateString);
-            System.out.println(updateString.toString());
-
-
-            while (rs.next()) {
-                np.add(rs.getString("nombre"));
-
-            }
+        String updateString = "SELECT nombre FROM ORD_PRODUCTOS JOIN ORD_DETALLE_PEDIDO  ON ORD_PRODUCTOS.codigo=ORD_DETALLE_PEDIDO.producto_fk WHERE ORD_PRODUCTOS.codigo=?";
+        con.setAutoCommit(false);
+        updateNames = con.prepareStatement(updateString);
+        updateNames.setInt(1,codigoPedido);
+        ResultSet rs = updateNames.executeQuery();
+        while (rs.next()) {
+            np.add(rs.getString(1));
         }
-        catch(SQLException e) {
-            System.out.println(e.getStackTrace());
-        }
+        updateNames.close();
+        rs.close();
 
 
 
@@ -144,11 +140,16 @@ public class JDBCExample {
      * @return el costo total del pedido (suma de: cantidades*precios)
      */
     public static int valorTotalPedido(Connection con, int codigoPedido){
-        
+
+        PreparedStatatement calculoStatement=null;
+
+        String calcule = "SELECT precio*COUNT() FROM ORD_PEDIDOS JOIN ORD_DETALLE_PEDIDO ON ORD_PEDIDO.codigo=ORD_DETALLE_PEDIDO.pedido_fk JOIN ORD_PRODUCTOS ON ORD_PRODUCTOS.codigo=producto_fk WHERE ORD_PEDIDOS.codigo=codigoPedido"
         //Crear prepared statement
         //asignar parámetros
         //usar executeQuery
         //Sacar resultado del ResultSet
+
+
         
         return 0;
     }
