@@ -46,7 +46,7 @@ public class JDBCExample {
             con.setAutoCommit(false);
                  
             
-            System.out.println("Valor total pedido 1:"+valorTotalPedido(con, 1));
+            System.out.println("Valor total pedido 2:"+valorTotalPedido(con, 2));
             
             List<String> prodsPedido=nombresProductosPedido(con, 1);
             
@@ -54,14 +54,14 @@ public class JDBCExample {
             System.out.println("Productos del pedido 1:");
             System.out.println("-----------------------");
             for (String nomprod:prodsPedido){
-                System.out.println("aaa; "+nomprod);
+                System.out.println(nomprod);
             }
             System.out.println("-----------------------");
             
 
             int suCodigoECI=2137478;
-            registrarNuevoProducto(con, 21379, "EduardJ", 9971);
-            con.commit();
+            //registrarNuevoProducto(con, 213791, "EduardJ", 9971);
+            //con.commit();
             con.close();
 
 
@@ -139,19 +139,21 @@ public class JDBCExample {
      * @param codigoPedido código del pedido cuyo total se calculará
      * @return el costo total del pedido (suma de: cantidades*precios)
      */
-    public static int valorTotalPedido(Connection con, int codigoPedido){
+    public static int valorTotalPedido(Connection con, int codigoPedido)throws SQLException{
 
-        PreparedStatatement calculoStatement=null;
+        PreparedStatement calculoStatement=null;
 
-        String calcule = "SELECT precio*COUNT() FROM ORD_PEDIDOS JOIN ORD_DETALLE_PEDIDO ON ORD_PEDIDO.codigo=ORD_DETALLE_PEDIDO.pedido_fk JOIN ORD_PRODUCTOS ON ORD_PRODUCTOS.codigo=producto_fk WHERE ORD_PEDIDOS.codigo=codigoPedido"
-        //Crear prepared statement
-        //asignar parámetros
-        //usar executeQuery
-        //Sacar resultado del ResultSet
-
-
-        
-        return 0;
+        String calcule = "SELECT SUM(precio*cantidad) FROM ORD_PEDIDOS JOIN ORD_DETALLE_PEDIDO ON ORD_PEDIDOS.codigo=ORD_DETALLE_PEDIDO.pedido_fk JOIN ORD_PRODUCTOS ON ORD_PRODUCTOS.codigo=producto_fk WHERE ORD_PEDIDOS.codigo=?";
+        calculoStatement = con.prepareStatement(calcule);
+        calculoStatement.setInt(1,codigoPedido);
+        ResultSet rs = calculoStatement.executeQuery();
+        int valor=0;
+        while(rs.next()){
+            valor = rs.getInt(1);
+        }
+        calculoStatement.close();
+        rs.close();
+        return valor;
     }
     
 
