@@ -5,7 +5,16 @@
   
 <mapper namespace="edu.eci.cvds.sampleprj.dao.mybatis.mappers.ItemMapper">
 
-
-    
+<resultMap type='Item' id='ItemsResult'>
+    <id property='id' column='id'/>
+    <result property='nombre' column='nombe'/>
+    <result property='descripcion' column='descripcion'/>  
+	<result property='fechalanzamiento' column='fechalanzamiento'/> 
+	<result property='tarifaxdia' column='tarifaxdia'/> 
+	<result property='formatorenta' column='formatorenta'/> 
+	<result property='genero' column='genero'/> 
+    <association property='tipoItem' javaType='TipoItem' resultMap="edu.eci.cvds.sampleprj.dao.mybatis.mappers.TipoItemMapper.TipoItemResult" columnPrefix="ti_"></association> <!-- AQUI FALTA ALTO -->
+	
+</resultMap>
     
 </mapper>
