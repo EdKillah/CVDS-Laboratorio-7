@@ -21,12 +21,17 @@ package edu.eci.cvds.samples.services.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ClienteMapper;
+import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ItemMapper;
+import edu.eci.cvds.samples.entities.Item;
+import edu.eci.cvds.samples.entities.TipoItem;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ClienteMapper;
-
 
 /**
  *
@@ -59,26 +64,36 @@ public class MyBatisExample {
      * @param args
      * @throws SQLException 
      */
-    public static void main(String args[]) throws SQLException {
+    public static void main(String args[]) throws SQLException, ParseException {
         SqlSessionFactory sessionfact = getSqlSessionFactory();
-		
-		SqlSession sqlss = sessionfact.openSession();
-        
 
-        ClienteMapper cm = sqlss.getMapper(ClienteMapper.class);
-		System.out.println(cm.consultarClientes());
-        //Crear el mapper y usarlo: 
-        //ClienteMapper cm=sqlss.getMapper(ClienteMapper.class)
-        //cm...
-        
-        
-        
+        SqlSession sqlss = sessionfact.openSession();
+
+
+        ClienteMapper cm=sqlss.getMapper(ClienteMapper.class);
+        System.out.println(cm.consultarClientes());
+        System.out.println("----------------------------");
+        System.out.println(cm.consultarCliente(5));
+        System.out.println("----------------------------");
+        //cm.agregarItemRentadoACliente(4,2 ,
+        //        new SimpleDateFormat("yyyy/MM/dd").parse("2019/09/28"),
+        //        new SimpleDateFormat("yyyy/MM/dd").parse("2019/10/28"));
+        //System.out.println(cm.consultarCliente(4));
+        ItemMapper im=sqlss.getMapper(ItemMapper.class);
+        //im.insertarItem(new Item(new TipoItem(1, "Videojuego" ),99,
+        //                "item99", "item99", new SimpleDateFormat("yyyy/MM/dd").parse("2019/09/28"),
+        //                99,"Digital","99"));
+        System.out.println(im.consultarItems());
+        System.out.println("----------------------------");
+        System.out.println(im.consultarItem(66));
         sqlss.commit();
         
         
         sqlss.close();
 
         
+        
     }
+
 
 }
